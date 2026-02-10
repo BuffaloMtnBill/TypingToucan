@@ -1,0 +1,11 @@
+# Proguard rules for Typing Toucan
+-keep class com.badlogic.gdx.backends.android.AndroidInput* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidGraphics* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidAudio* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidFiles* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidApplication* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidLiveWallpaper* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidMultiTouch* { *; }
+-keep class com.badlogic.gdx.backends.android.AndroidVisibilityListener* { *; }
+-keep class com.badlogic.gdx.graphics.g2d.FreeTypeFontGenerator { *; }
+-keep class com.badlogic.gdx.controllers.android.AndroidControllers { *; }
