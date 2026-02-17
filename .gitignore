@@ -1,3 +1,5 @@
+
+# Valid previous content
 .gradle/
 .kotlin/
 build/
@@ -7,4 +9,11 @@ bin/
 .DS_Store
 local.properties
 android/libs/
+# android/assets/ # Commented out potential mistake? Use discretion. Leaving as is based on existing file.
 android/assets/
+*.keystore
+release.keystore
+
+# Ignore screenshots
+screenshot_*.png
+desktop/screenshot_*.png

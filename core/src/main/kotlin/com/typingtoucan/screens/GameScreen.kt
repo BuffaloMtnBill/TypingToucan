@@ -18,6 +18,7 @@ import com.typingtoucan.entities.Neck
 import com.typingtoucan.systems.DifficultyManager
 import com.typingtoucan.utils.DebugOverlay
 import com.typingtoucan.utils.SaveManager
+import com.typingtoucan.utils.ScreenshotFactory
 
 /**
  * The core gameplay screen.
@@ -42,6 +43,11 @@ class GameScreen(
         private val startLevel: Int = 1,
         private val isArcadeMode: Boolean = false
 ) : Screen, InputProcessor {
+
+    companion object {
+        const val ENABLE_SCREENSHOTS = false
+    }
+
     private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 600f) }
     private val viewport = com.badlogic.gdx.utils.viewport.ExtendViewport(800f, 600f, camera)
 
@@ -517,6 +523,16 @@ class GameScreen(
             }
             // Other states (MAIN, AUDIO, EXIT_CONFIRM) are handled via event-based
             // handlePauseMenuInput.
+        }
+
+        // Screenshot Trigger (Desktop Only)
+        if (ENABLE_SCREENSHOTS && Gdx.app.type == Application.ApplicationType.Desktop) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.P) &&
+                            (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) ||
+                                    Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))
+            ) {
+                ScreenshotFactory.saveScreenshot()
+            }
         }
 
         // Handle enter for victory screen.
