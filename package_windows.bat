@@ -21,13 +21,16 @@ jlink ^
 echo.
 echo Packaging Windows Executable with jpackage...
 jpackage ^
-  --type app-image ^
-  --name "TypingToucan" ^
+  --type msi ^
+  --name "TypingToucan Setup" ^
   --input desktop/build/libs ^
   --main-jar desktop-1.0-SNAPSHOT-all.jar ^
   --main-class com.typingtoucan.DesktopLauncherKt ^
   --runtime-image custom-jre ^
   --win-console ^
+  --win-shortcut ^
+  --win-menu ^
+  --win-dir-chooser ^
   --dest release
 
 echo.
