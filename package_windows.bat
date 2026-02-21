@@ -27,7 +27,6 @@ jpackage ^
   --main-jar desktop-1.0-SNAPSHOT-all.jar ^
   --main-class com.typingtoucan.DesktopLauncherKt ^
   --runtime-image custom-jre ^
-  --win-console ^
   --win-shortcut ^
   --win-menu ^
   --win-dir-chooser ^
