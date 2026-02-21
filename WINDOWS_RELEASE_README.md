@@ -2,7 +2,7 @@
 
 **Notice a warning when running the installer?** 
 
-Windows Defender SmartScreen throws a "Windows protected your PC" blue warning screen for indie games and software that haven't been downloaded thousands of times to build up Microsoft's "reputation score." Because `TypingToucan Setup-1.0.msi` is a new file, it requires a manual permission to run.
+Windows Defender SmartScreen throws a "Windows protected your PC" blue warning screen for indie games and software that haven't been downloaded thousands of times to build up Microsoft's "reputation score." Because `Typing Toucan-1.0.msi` is a new file, it requires a manual permission to run.
 
 **To successfully install the game:**
 1. Click **"More info"** on the blue warning screen.

@@ -22,7 +22,7 @@ echo.
 echo Packaging Windows Executable with jpackage...
 jpackage ^
   --type msi ^
-  --name "TypingToucan Setup" ^
+  --name "Typing Toucan" ^
   --input desktop/build/libs ^
   --main-jar desktop-1.0-SNAPSHOT-all.jar ^
   --main-class com.typingtoucan.DesktopLauncherKt ^
