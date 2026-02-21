@@ -31,6 +31,7 @@ jpackage ^
   --win-shortcut ^
   --win-menu ^
   --win-dir-chooser ^
+  --resource-dir installer-resources ^
   --dest release
 
 echo.
