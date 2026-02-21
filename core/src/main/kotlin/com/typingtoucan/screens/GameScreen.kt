@@ -474,9 +474,7 @@ class GameScreen(
 
         // Switch to game music but don't play yet (wait for gameStarted).
         // Apply pending track selection.
-        if (game.soundManager.currentTrack != game.soundManager.pendingTrack) {
-            game.soundManager.currentTrack = game.soundManager.pendingTrack
-        }
+        game.soundManager.updateTrack(game.soundManager.pendingTrack, save = true)
         game.soundManager.stopMusic()
     }
 

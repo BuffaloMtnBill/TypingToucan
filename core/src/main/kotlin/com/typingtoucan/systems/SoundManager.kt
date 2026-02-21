@@ -55,17 +55,30 @@ class SoundManager {
         DARK_FOREST
     }
 
+    private var _currentTrack: MusicTrack = MusicTrack.WHAT
     /** The currently selected background music track. Switches track immediately upon change. */
-    var currentTrack: MusicTrack = MusicTrack.WHAT
+    var currentTrack: MusicTrack
+        get() = _currentTrack
         set(value) {
-            if (field != value) {
-                field = value
-                val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
-                prefs.putString("musicTrack", value.name)
-                prefs.flush()
-                switchMusic(value)
-            }
+            updateTrack(value, true)
         }
+
+    /**
+     * Updates the active music track.
+     * @param track The track to switch to.
+     * @param save If true, the choice is persisted to preferences.
+     */
+    fun updateTrack(track: MusicTrack, save: Boolean = true) {
+        if (_currentTrack != track) {
+            _currentTrack = track
+            if (save) {
+                val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
+                prefs.putString("musicTrack", track.name)
+                prefs.flush()
+            }
+            switchMusic()
+        }
+    }
 
     /** The track selected by the user in the menu, to be applied when the game starts. */
     var pendingTrack: MusicTrack = MusicTrack.WHAT
@@ -82,13 +95,13 @@ class SoundManager {
         soundEnabled = prefs.getBoolean("soundEnabled", true)
         musicEnabled = prefs.getBoolean("musicEnabled", true)
         val savedTrack = prefs.getString("musicTrack", MusicTrack.WHAT.name)
-        currentTrack = MusicTrack.valueOf(savedTrack)
-        pendingTrack = currentTrack
+        _currentTrack = MusicTrack.valueOf(savedTrack)
+        pendingTrack = _currentTrack
     }
 
     /** Refreshes references to audio assets from the AssetManager. Does not trigger playback. */
     fun refreshAssets() {
-        val am = assetManager ?: return
+        if (assetManager == null) return
 
         // Populate collections from AssetManager.
         // Flap.
@@ -130,7 +143,7 @@ class SoundManager {
 
         // Initial music (managed individually via getMusic).
         val path =
-                when (currentTrack) {
+                when (_currentTrack) {
                     MusicTrack.WHAT -> "assets/music_bg.mp3"
                     MusicTrack.DARK_FOREST -> "assets/music_dark_forest.mp3"
                 }
@@ -172,9 +185,7 @@ class SoundManager {
     /** Plays a random monkey sound effect. */
     fun playMonkey() {
         if (soundEnabled && monkeySounds.size > 0) {
-            val id = monkeySounds.random().play(0.6f)
-            // Optional: Randomize pitch slightly?
-            // monkeySounds.random().setPitch(id, 0.9f + Math.random().toFloat() * 0.2f)
+            monkeySounds.random().play(0.6f)
         }
     }
 
@@ -240,7 +251,7 @@ class SoundManager {
     private fun loadCurrentTrack() {
         // bgMusic?.dispose() // Removed: AssetManager handles disposal
         val path =
-                when (currentTrack) {
+                when (_currentTrack) {
                     MusicTrack.WHAT -> "assets/music_bg.mp3"
                     MusicTrack.DARK_FOREST -> "assets/music_dark_forest.mp3"
                 }
@@ -255,7 +266,7 @@ class SoundManager {
      *
      * @param track The new [MusicTrack] to play.
      */
-    private fun switchMusic(track: MusicTrack) {
+    private fun switchMusic() {
         stopMusic()
         loadCurrentTrack()
         if (musicEnabled) {

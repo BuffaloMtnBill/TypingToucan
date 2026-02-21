@@ -149,8 +149,10 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
 
         // Start menu music.
         if (game.soundManager.musicEnabled) {
-            game.soundManager.currentTrack =
-                    com.typingtoucan.systems.SoundManager.MusicTrack.DARK_FOREST
+            game.soundManager.updateTrack(
+                    com.typingtoucan.systems.SoundManager.MusicTrack.DARK_FOREST,
+                    save = false
+            )
             game.soundManager.playMusic()
         }
     }
