@@ -45,7 +45,7 @@ class GameScreen(
 ) : Screen, InputProcessor {
 
     companion object {
-        const val ENABLE_SCREENSHOTS = false
+        const val ENABLE_SCREENSHOTS = true
     }
 
     private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 600f) }

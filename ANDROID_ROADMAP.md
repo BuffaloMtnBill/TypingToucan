@@ -49,9 +49,9 @@ The current project is a flat JVM structure. Android requires a multi-module Gra
 
 3.  **SDK Management**:
     *   In `android/build.gradle.kts`:
-        *   `compileSdk = 34`
+        *   `compileSdk = 35`
         *   `minSdk = 21` (Android 5.0 Lollipop)
-        *   `targetSdk = 34` (Android 14)
+        *   `targetSdk = 35` (Android 14)
     *   **Subtask**: Verify JDK 17 compatibility (required for AGP 8.0+).
 
 4.  **Icons & Branding**:

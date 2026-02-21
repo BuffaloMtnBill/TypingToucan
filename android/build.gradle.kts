@@ -10,12 +10,12 @@ val gdxVersion: String by project
 
 android {
     namespace = "com.typingtoucan.android"
-    compileSdk = 34
+    compileSdk = 35
     
     defaultConfig {
         applicationId = "com.typingtoucan.android"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "0.9.0"
     }
