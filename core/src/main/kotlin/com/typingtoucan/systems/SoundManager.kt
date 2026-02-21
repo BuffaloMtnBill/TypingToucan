@@ -60,7 +60,7 @@ class SoundManager {
     var currentTrack: MusicTrack
         get() = _currentTrack
         set(value) {
-            updateTrack(value, true)
+            updateTrack(value)
         }
 
     /**
