@@ -17,3 +17,7 @@ release.keystore
 # Ignore screenshots
 screenshot_*.png
 desktop/screenshot_*.png
+
+# Ignore Windows release build outputs
+release/
+custom-jre/
