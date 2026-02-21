@@ -558,6 +558,9 @@ class GameScreen(
             if (pauseState == PauseState.NONE) {
                 // Ready state (type to start).
                 stateTime += delta
+                pulse5 = kotlin.math.sin(stateTime * 5f)
+                pulse10 = kotlin.math.sin(stateTime * 10f)
+                underscoreAlpha = 0.5f + 0.5f * pulse10
                 bird.y = 300f + pulse5 * 10f
                 bird.velocity = 0f
             }
