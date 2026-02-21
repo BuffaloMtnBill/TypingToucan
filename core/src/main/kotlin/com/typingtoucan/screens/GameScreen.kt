@@ -473,8 +473,8 @@ class GameScreen(
         game.batch.projectionMatrix = camera.combined
 
         // Switch to game music but don't play yet (wait for gameStarted).
-        // Apply pending track selection.
-        game.soundManager.updateTrack(game.soundManager.pendingTrack, save = true)
+        // Apply fixed 'What' track for gameplay.
+        game.soundManager.updateTrack(com.typingtoucan.systems.SoundManager.MusicTrack.WHAT)
         game.soundManager.stopMusic()
     }
 

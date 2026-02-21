@@ -66,22 +66,13 @@ class SoundManager {
     /**
      * Updates the active music track.
      * @param track The track to switch to.
-     * @param save If true, the choice is persisted to preferences.
      */
-    fun updateTrack(track: MusicTrack, save: Boolean = true) {
+    fun updateTrack(track: MusicTrack) {
         if (_currentTrack != track) {
             _currentTrack = track
-            if (save) {
-                val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
-                prefs.putString("musicTrack", track.name)
-                prefs.flush()
-            }
             switchMusic()
         }
     }
-
-    /** The track selected by the user in the menu, to be applied when the game starts. */
-    var pendingTrack: MusicTrack = MusicTrack.WHAT
 
     private var assetManager: com.badlogic.gdx.assets.AssetManager? = null
 
@@ -90,13 +81,11 @@ class SoundManager {
         this.assetManager = am
         refreshAssets()
 
-        // Load persisted settings.
+        // Load persisted settings (Tracks are now fixed per screen).
         val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
         soundEnabled = prefs.getBoolean("soundEnabled", true)
         musicEnabled = prefs.getBoolean("musicEnabled", true)
-        val savedTrack = prefs.getString("musicTrack", MusicTrack.WHAT.name)
-        _currentTrack = MusicTrack.valueOf(savedTrack)
-        pendingTrack = _currentTrack
+        _currentTrack = MusicTrack.WHAT
     }
 
     /** Refreshes references to audio assets from the AssetManager. Does not trigger playback. */

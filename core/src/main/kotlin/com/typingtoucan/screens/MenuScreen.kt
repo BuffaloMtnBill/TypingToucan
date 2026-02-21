@@ -57,8 +57,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
             listOf("Easy", "Normal", "Hard", "Insane", "", "Change Start Level")
 
     /** List of settings available in the options submenu. */
-    private val optionsMenuItems =
-            listOf("Sound", "Music", "Music Track", "Reset High Score", "Back")
+    private val optionsMenuItems = listOf("Sound", "Music", "Reset High Score", "Back")
 
     /** Reusable color object to avoid per-frame allocations. */
     private val tempColor = Color()
@@ -76,7 +75,6 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     // Cached menu strings (Optimization #3).
     private var cachedSoundLabel = ""
     private var cachedMusicLabel = ""
-    private var cachedTrackLabel = ""
     private var cachedStartLevelLabel = ""
 
     // Cached UI alignment (Optimization #6).
@@ -96,8 +94,8 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private val descriptionLayouts = Array(6) { GlyphLayout() }
     private val difficultyLayouts = Array(6) { GlyphLayout() }
     private val difficultySelectedLayouts = Array(6) { GlyphLayout() }
-    private val optionsMenuLayouts = Array(5) { GlyphLayout() }
-    private val optionsMenuSelectedLayouts = Array(5) { GlyphLayout() }
+    private val optionsMenuLayouts = Array(4) { GlyphLayout() }
+    private val optionsMenuSelectedLayouts = Array(4) { GlyphLayout() }
     private val difficultyHeaderLayout = GlyphLayout()
     private val optionsHeaderLayout = GlyphLayout()
     private val scoreTextLayout = GlyphLayout()
@@ -150,8 +148,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
         // Start menu music.
         if (game.soundManager.musicEnabled) {
             game.soundManager.updateTrack(
-                    com.typingtoucan.systems.SoundManager.MusicTrack.DARK_FOREST,
-                    save = false
+                    com.typingtoucan.systems.SoundManager.MusicTrack.DARK_FOREST
             )
             game.soundManager.playMusic()
         }
@@ -161,11 +158,6 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
         val sm = game.soundManager
         cachedSoundLabel = "Sound: ${if (sm.soundEnabled) "ON" else "OFF"}"
         cachedMusicLabel = "Music: ${if (sm.musicEnabled) "ON" else "OFF"}"
-
-        val trackName =
-                if (sm.pendingTrack == com.typingtoucan.systems.SoundManager.MusicTrack.WHAT) "What"
-                else "Dark Forest"
-        cachedTrackLabel = "Music Track: $trackName"
 
         val char =
                 if (startLevel <= progressionString.length) progressionString[startLevel - 1]
@@ -191,17 +183,10 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
 
         // Music label.
         menuFont.color = Color.WHITE
-        optionsMenuLayouts[1].setText(menuFont, cachedSoundLabel)
+        optionsMenuLayouts[1].setText(menuFont, cachedMusicLabel)
         menuFont.color = SELECTED_COLOR
         optionsMenuSelectedLayouts[1].setText(menuFont, cachedMusicLabel)
         optionsX[1] = centerX - optionsMenuLayouts[1].width / 2f
-
-        // Track label.
-        menuFont.color = Color.WHITE
-        optionsMenuLayouts[2].setText(menuFont, cachedTrackLabel)
-        menuFont.color = SELECTED_COLOR
-        optionsMenuSelectedLayouts[2].setText(menuFont, cachedTrackLabel)
-        optionsX[2] = centerX - optionsMenuLayouts[2].width / 2f
 
         menuFont.color = Color.WHITE // Final reset.
     }
@@ -245,7 +230,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
 
         // Options menu items (normal and selected states).
         optionsMenuItems.forEachIndexed { index, item ->
-            if (index >= 3) { // Reset High Score, Back.
+            if (index >= 2) { // Reset High Score, Back.
                 val label = if (item == "Reset High Score") "Reset High Scores" else item
                 menuFont.color = Color.WHITE
                 optionsMenuLayouts[index].setText(menuFont, label)
@@ -405,7 +390,6 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
                         when (item) {
                             "Sound" -> cachedSoundLabel
                             "Music" -> cachedMusicLabel
-                            "Music Track" -> cachedTrackLabel
                             "Reset High Score" -> "Reset High Scores"
                             else -> item
                         }
@@ -680,23 +664,14 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
                     sm.musicEnabled = !sm.musicEnabled
                     refreshDynamicLabels()
                 }
-                2 -> { // Toggle track.
-                    sm.pendingTrack =
-                            if (sm.pendingTrack ==
-                                            com.typingtoucan.systems.SoundManager.MusicTrack.WHAT
-                            )
-                                    com.typingtoucan.systems.SoundManager.MusicTrack.DARK_FOREST
-                            else com.typingtoucan.systems.SoundManager.MusicTrack.WHAT
-                    refreshDynamicLabels()
-                }
-                3 -> {
+                2 -> {
                     // Reset high scores and play feedback sound.
                     SaveManager.resetHighScore()
                     game.soundManager.playLevelUpPractice()
                 }
-                4 -> { // Back.
+                3 -> { // Back.
                     isOptionsSelect = false
-                    selectedIndex = 3 // Return to "Options" menu item.
+                    selectedIndex = 4 // Return to "Options" menu item.
                 }
             }
         }
