@@ -1733,7 +1733,7 @@ class GameScreen(
 
     private fun drawPauseMainMenu() {
         var startY = viewport.worldHeight / 2f + 100f
-        val gap = 75f
+        val gap = 50f
         val centerX = viewport.worldWidth / 2f
 
         for (index in 0 until mainMenuItems.size) {
@@ -1758,7 +1758,7 @@ class GameScreen(
 
     private fun drawAudioMenu() {
         val startY = viewport.worldHeight / 2f + 100f
-        val gap = 75f
+        val gap = 50f
         val centerX = viewport.worldWidth / 2f
 
         for (index in 0 until audioMenuItems.size) {
@@ -1828,7 +1828,7 @@ class GameScreen(
         val startY =
                 if (pauseState == PauseState.EXIT_CONFIRM) viewport.worldHeight / 2f + 50f
                 else viewport.worldHeight / 2f + 100f
-        val gap = 75f
+        val gap = 50f
 
         val currentList =
                 when (pauseState) {
@@ -1862,8 +1862,8 @@ class GameScreen(
 
             if (worldPos.x >= x - 80 &&
                             worldPos.x <= x + w + 80 &&
-                            worldPos.y >= y - h - 35 &&
-                            worldPos.y <= y + 35
+                            worldPos.y >= y - h - 15 &&
+                            worldPos.y <= y + 15
             ) {
                 menuSelectedIndex = index
                 executePauseMenuAction()

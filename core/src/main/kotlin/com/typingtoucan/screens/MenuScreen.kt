@@ -306,7 +306,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private fun drawMainMenu() {
         val centerY = viewport.worldHeight / 2f + 95f // Shifted down 0.5 lines.
         val startY = centerY
-        val gap = 75f
+        val gap = 50f
 
         options.forEachIndexed { index, option ->
             val isSelected = index == selectedIndex
@@ -339,7 +339,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private fun drawDifficultySelect() {
         val centerY = viewport.worldHeight / 2f + 50f
         var startY = centerY
-        val gap = 75f
+        val gap = 50f
 
         menuFont.draw(game.batch, difficultyHeaderLayout, promptX, centerY + 100f)
 
@@ -366,7 +366,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private fun drawOptionsMenu() {
         val centerY = viewport.worldHeight / 2f + 50f
         val startY = centerY
-        val gap = 75f
+        val gap = 50f
 
         menuFont.draw(
                 game.batch,
@@ -507,7 +507,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
         val centerX = viewport.worldWidth / 2f
         val centerY = viewport.worldHeight / 2f + 50f
         val startY = centerY
-        val gap = 75f // Expanded gap for larger touch targets.
+        val gap = 50f
 
         // Iterate through visible options to check click bounds.
         currentList.forEachIndexed { index, option ->
@@ -522,11 +522,11 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
             val x = centerX - w / 2
             val y = startY - (index * gap)
 
-            // Massively expanded hitboxes for touch accuracy.
+            // Expanded hitboxes optimized for a 50f gap (no overlapping rows).
             if (worldPos.x >= x - 80 &&
                             worldPos.x <= x + w + 80 &&
-                            worldPos.y >= y - h - 35 &&
-                            worldPos.y <= y + 35
+                            worldPos.y >= y - h - 15 &&
+                            worldPos.y <= y + 15
             ) {
                 if (isDifficultySelect && index == 5) {
                     // Split the screen side to left/right for easier start level adjusting.
