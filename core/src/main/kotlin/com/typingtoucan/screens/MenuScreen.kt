@@ -346,6 +346,11 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
         difficultyOptions.forEachIndexed { index, option ->
             if (option.isEmpty()) return@forEachIndexed // Skip blank lines.
 
+            // Skip "Change Start Level" for Text Mode or Arcade Mode
+            if ((isTextModeSelect || isArcadeModeSelect) && index == 5) {
+                return@forEachIndexed
+            }
+
             val isSelected = index == selectedIndex
             val x = if (index < difficultyX.size) difficultyX[index] else centerX
             val y = startY - (index * gap)
