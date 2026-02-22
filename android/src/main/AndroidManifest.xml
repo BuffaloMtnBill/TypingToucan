@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <uses-feature android:name="android.software.leanback" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +15,6 @@
         
         <activity
             android:name="com.typingtoucan.AndroidLauncher"
-            android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|density|navigation"
             android:exported="true">
