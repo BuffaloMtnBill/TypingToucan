@@ -29,7 +29,7 @@ class CustomSetupScreen(val game: TypingToucanGame) : Screen, InputProcessor {
     private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 600f) }
     private val viewport = com.badlogic.gdx.utils.viewport.ExtendViewport(800f, 600f, camera)
 
-    private lateinit var uiFont: BitmapFont
+    private var uiFont: BitmapFont
     private val shapeRenderer = ShapeRenderer()
     private val layout = GlyphLayout()
 
@@ -52,7 +52,7 @@ class CustomSetupScreen(val game: TypingToucanGame) : Screen, InputProcessor {
 
     /** Tracks the state of the Shift toggle. */
     private var isShiftActive = false
-    private lateinit var instructionFont: BitmapFont
+    private var instructionFont: BitmapFont
 
     private val SELECTED_COLOR = Color(1f, 0.906f, 0f, 1f) // #ffe700
 
@@ -306,29 +306,46 @@ class CustomSetupScreen(val game: TypingToucanGame) : Screen, InputProcessor {
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val touch = camera.unproject(Vector3(screenX.toFloat(), screenY.toFloat(), 0f))
 
-        // Handle the shift/caps toggle.
-        if (capsRect.contains(touch.x, touch.y)) {
+        // Handle the shift/caps toggle with padding.
+        if (touch.x >= capsRect.x - 20f &&
+                        touch.x <= capsRect.x + capsRect.width + 20f &&
+                        touch.y >= capsRect.y - 20f &&
+                        touch.y <= capsRect.y + capsRect.height + 20f
+        ) {
             isShiftActive = !isShiftActive
             return true
         }
 
-        // Start
-        if (startRect.contains(touch.x, touch.y)) {
+        // Start button with padding.
+        if (touch.x >= startRect.x - 20f &&
+                        touch.x <= startRect.x + startRect.width + 20f &&
+                        touch.y >= startRect.y - 20f &&
+                        touch.y <= startRect.y + startRect.height + 20f
+        ) {
             tryStartGame()
             return true
         }
 
-        // Handle back navigation.
-        if (backRect.contains(touch.x, touch.y)) {
+        // Handle back navigation with padding.
+        if (touch.x >= backRect.x - 20f &&
+                        touch.x <= backRect.x + backRect.width + 20f &&
+                        touch.y >= backRect.y - 20f &&
+                        touch.y <= backRect.y + backRect.height + 20f
+        ) {
             game.screen = MenuScreen(game)
             return true
         }
 
-        // Handle grid key selection.
+        // Handle grid key selection with gap-filling padding (5f padding for a 10f gap).
         standardKeys.forEach { char ->
             val rect = keyRects[char]!!
-            if (rect.contains(touch.x, touch.y)) {
+            if (touch.x >= rect.x - 5f &&
+                            touch.x <= rect.x + rect.width + 5f &&
+                            touch.y >= rect.y - 5f &&
+                            touch.y <= rect.y + rect.height + 5f
+            ) {
                 toggleChar(char)
+                return true
             }
         }
 

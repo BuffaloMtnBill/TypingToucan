@@ -52,23 +52,23 @@ class GameScreen(
     private val viewport = com.badlogic.gdx.utils.viewport.ExtendViewport(800f, 600f, camera)
 
     // Font assets.
-    private lateinit var uiFont: BitmapFont
-    private lateinit var queueFont: BitmapFont
+    private var uiFont: BitmapFont
+    private var queueFont: BitmapFont
     private val layout = GlyphLayout()
-    private lateinit var smallFont: BitmapFont
-    private lateinit var shadowFont: BitmapFont
-    private lateinit var debugOverlay: DebugOverlay
+    private var smallFont: BitmapFont
+    private var shadowFont: BitmapFont
+    private var debugOverlay: DebugOverlay
 
     // Graphics assets.
     private val backgroundTiles = mutableListOf<TextureRegion>()
-    private lateinit var groundTexture: TextureRegion
-    private lateinit var victoryTexture: TextureRegion
-    private lateinit var monkeyTextures: List<TextureRegion>
-    private lateinit var currentMonkeyTexture: TextureRegion
+    private var groundTexture: TextureRegion
+    private var victoryTexture: TextureRegion
+    private var monkeyTextures: List<TextureRegion>
+    private var currentMonkeyTexture: TextureRegion
 
     // Ground animation state.
-    private lateinit var groundAnimTextures: List<TextureRegion>
-    private lateinit var groundAnimation: Animation<TextureRegion>
+    private var groundAnimTextures: List<TextureRegion>
+    private var groundAnimation: Animation<TextureRegion>
     private var activeGroundIndex = 0
     private var groundTimer = 0f
     private var lastTextLineIndex = -1
@@ -81,11 +81,11 @@ class GameScreen(
     }
 
     // Static obstacles (giraffe: 50x300, anaconda: wide).
-    private lateinit var giraffeObstacles: Array<TextureRegion>
-    private lateinit var anacondaObstacles: Array<TextureRegion>
+    private var giraffeObstacles: Array<TextureRegion>
+    private var anacondaObstacles: Array<TextureRegion>
 
     // Toucan assets.
-    private lateinit var toucanPainTexture: TextureRegion
+    private var toucanPainTexture: TextureRegion
 
     // Entity animation.
     private val birdAnimation: Animation<TextureRegion>
@@ -93,7 +93,7 @@ class GameScreen(
     private var stateTime = 0f
 
     // Game state.
-    private lateinit var whitePixel: TextureRegion
+    private var whitePixel: TextureRegion
     private val bird = Bird(90f, 400f)
     private val neckPool =
             object : com.badlogic.gdx.utils.Pool<Neck>() {
@@ -1733,7 +1733,7 @@ class GameScreen(
 
     private fun drawPauseMainMenu() {
         var startY = viewport.worldHeight / 2f + 100f
-        val gap = 50f
+        val gap = 75f
         val centerX = viewport.worldWidth / 2f
 
         for (index in 0 until mainMenuItems.size) {
@@ -1758,7 +1758,7 @@ class GameScreen(
 
     private fun drawAudioMenu() {
         val startY = viewport.worldHeight / 2f + 100f
-        val gap = 50f
+        val gap = 75f
         val centerX = viewport.worldWidth / 2f
 
         for (index in 0 until audioMenuItems.size) {
@@ -1828,7 +1828,7 @@ class GameScreen(
         val startY =
                 if (pauseState == PauseState.EXIT_CONFIRM) viewport.worldHeight / 2f + 50f
                 else viewport.worldHeight / 2f + 100f
-        val gap = 50f
+        val gap = 75f
 
         val currentList =
                 when (pauseState) {
@@ -1855,12 +1855,16 @@ class GameScreen(
 
             // Note: Dynamic labels might vary in width, but this is sufficient for touch detection.
             layout.setText(uiFont, label)
-            val w = layout.width + 40f
-            val h = layout.height + 40f
+            val w = layout.width
+            val h = layout.height
             val x = centerX - w / 2
-            val y = startY - (index * gap) - 20f
+            val y = startY - (index * gap)
 
-            if (worldPos.x >= x && worldPos.x <= x + w && worldPos.y >= y && worldPos.y <= y + h) {
+            if (worldPos.x >= x - 80 &&
+                            worldPos.x <= x + w + 80 &&
+                            worldPos.y >= y - h - 35 &&
+                            worldPos.y <= y + 35
+            ) {
                 menuSelectedIndex = index
                 executePauseMenuAction()
             }
@@ -1932,7 +1936,7 @@ class GameScreen(
 
     private fun drawExitConfirmMenu() {
         val startY = viewport.worldHeight / 2f + 50f
-        val gap = 50f
+        val gap = 75f
         val centerX = viewport.worldWidth / 2f
 
         for (index in 0 until exitConfirmItems.size) {

@@ -46,9 +46,9 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
             )
 
     // Game assets.
-    private lateinit var titleFont: BitmapFont
-    private lateinit var menuFont: BitmapFont
-    private lateinit var captionFont: BitmapFont
+    private var titleFont: BitmapFont
+    private var menuFont: BitmapFont
+    private var captionFont: BitmapFont
     private val shapeRenderer = ShapeRenderer()
     private val layout = GlyphLayout()
 
@@ -306,7 +306,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private fun drawMainMenu() {
         val centerY = viewport.worldHeight / 2f + 95f // Shifted down 0.5 lines.
         val startY = centerY
-        val gap = 50f
+        val gap = 75f
 
         options.forEachIndexed { index, option ->
             val isSelected = index == selectedIndex
@@ -339,7 +339,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private fun drawDifficultySelect() {
         val centerY = viewport.worldHeight / 2f + 50f
         var startY = centerY
-        val gap = 50f
+        val gap = 75f
 
         menuFont.draw(game.batch, difficultyHeaderLayout, promptX, centerY + 100f)
 
@@ -366,7 +366,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
     private fun drawOptionsMenu() {
         val centerY = viewport.worldHeight / 2f + 50f
         val startY = centerY
-        val gap = 50f
+        val gap = 75f
 
         menuFont.draw(
                 game.batch,
@@ -507,7 +507,7 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
         val centerX = viewport.worldWidth / 2f
         val centerY = viewport.worldHeight / 2f + 50f
         val startY = centerY
-        val gap = 50f
+        val gap = 75f // Expanded gap for larger touch targets.
 
         // Iterate through visible options to check click bounds.
         currentList.forEachIndexed { index, option ->
@@ -522,16 +522,17 @@ class MenuScreen(val game: TypingToucanGame) : Screen, com.badlogic.gdx.InputPro
             val x = centerX - w / 2
             val y = startY - (index * gap)
 
-            if (worldPos.x >= x - 20 &&
-                            worldPos.x <= x + w + 20 &&
-                            worldPos.y >= y - h - 10 &&
-                            worldPos.y <= y + 20
+            // Massively expanded hitboxes for touch accuracy.
+            if (worldPos.x >= x - 80 &&
+                            worldPos.x <= x + w + 80 &&
+                            worldPos.y >= y - h - 35 &&
+                            worldPos.y <= y + 35
             ) {
                 if (isDifficultySelect && index == 5) {
-                    val rx = worldPos.x - x
-                    if (rx < w * 0.25f) { // Left 25%
+                    // Split the screen side to left/right for easier start level adjusting.
+                    if (worldPos.x < centerX) {
                         startLevel = (startLevel - 1).coerceAtLeast(1)
-                    } else if (rx > w * 0.75f) { // Right 25%
+                    } else {
                         startLevel = (startLevel + 1).coerceAtMost(progressionString.length)
                     }
                     selectedIndex = index
