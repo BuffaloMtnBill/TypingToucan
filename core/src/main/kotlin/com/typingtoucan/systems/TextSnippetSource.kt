@@ -76,7 +76,6 @@ class TextSnippetSource(
                     // Check if we just loaded final credit? Loop?
                     // User says "autoplays... display credits". Usually loops or ends?
                     // Infinite loop is safest for Text Mode architecture.
-                    val nextIdx = (listIndex + 1) % allPassages.size
                     // Note: listIndex is tracking CURRENTLY PRELOADED next.
                     // Wait. init calls setupCurrent (idx 0), then preloadNext.
                     // preloadNext should load idx 1.
@@ -180,8 +179,6 @@ class TextSnippetSource(
         displayLines.clear()
         displayLines.addAll(nextDisplayLines)
         processedText = nextProcessedText
-
-        val oldLen = processedText.length
 
         // Rebase
         // Hard reset to 3 matches the TypingQueue buffer size.
