@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
  * [AssetManager]. It handles the loading of all game assets at the start and manages screen
  * transitions.
  */
-class TypingToucanGame : Game() {
+class TypingToucanGame(val isDebugBuild: Boolean = false) : Game() {
         /** The main sprite batch used for rendering across the application. */
         public lateinit var batch: SpriteBatch
 

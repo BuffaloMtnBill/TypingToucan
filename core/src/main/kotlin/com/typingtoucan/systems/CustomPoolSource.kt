@@ -15,7 +15,6 @@ class CustomPoolSource(private val characters: List<Char>) : TypingSource {
 
     init {
         if (characters.isEmpty()) throw IllegalArgumentException("Custom pool cannot be empty")
-        if (characters.isEmpty()) throw IllegalArgumentException("Custom pool cannot be empty.")
     }
 
     override fun getNextChar(): Char {

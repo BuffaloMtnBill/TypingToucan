@@ -19,7 +19,7 @@ fun main() {
                 setForegroundFPS(60)
             }
     try {
-        Lwjgl3Application(TypingToucanGame(), config)
+        Lwjgl3Application(TypingToucanGame(isDebugBuild = true), config)
     } catch (e: Throwable) {
         println("CRITICAL ERROR: Game Crashed")
         e.printStackTrace()

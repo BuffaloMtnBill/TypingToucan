@@ -16,8 +16,8 @@ android {
         applicationId = "com.typingtoucan.android"
         minSdk = 21
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.9.1"
+        versionCode = 6
+        versionName = "0.9.2"
     }
 
     signingConfigs {
@@ -60,6 +60,12 @@ android {
     
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 }
 

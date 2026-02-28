@@ -18,7 +18,7 @@ class AndroidLauncher : AndroidApplication() {
         }
         
         // Initialize the game
-        initialize(TypingToucanGame(), config)
+        initialize(TypingToucanGame(isDebugBuild = false), config)
         
         // Ensure the soft keyboard doesn't pop up automatically
         // since we are targeting physical bluetooth keyboards.

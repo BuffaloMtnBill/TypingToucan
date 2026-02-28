@@ -44,9 +44,7 @@ class GameScreen(
         private val isArcadeMode: Boolean = false
 ) : Screen, InputProcessor {
 
-    companion object {
-        const val ENABLE_SCREENSHOTS = true
-    }
+    companion object
 
     private val camera = OrthographicCamera().apply { setToOrtho(false, 800f, 600f) }
     private val viewport = com.badlogic.gdx.utils.viewport.ExtendViewport(800f, 600f, camera)
@@ -524,7 +522,7 @@ class GameScreen(
         }
 
         // Screenshot Trigger (Desktop Only)
-        if (ENABLE_SCREENSHOTS && Gdx.app.type == Application.ApplicationType.Desktop) {
+        if (game.isDebugBuild && Gdx.app.type == Application.ApplicationType.Desktop) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.P) &&
                             (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT) ||
                                     Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))
@@ -974,8 +972,6 @@ class GameScreen(
         }
 
         // 3. Draw tiled ground.
-        val groundW = groundTexture.regionWidth.toFloat()
-        val numGroundTiles = kotlin.math.ceil(viewport.worldWidth / groundW).toInt() + 1
         val textureToDraw =
                 when (activeGroundIndex) {
                     0 -> groundTexture
@@ -1311,7 +1307,9 @@ class GameScreen(
                 val targetX = viewport.worldWidth / 2f - layout.width / 2f
 
                 // 2. Measure the "jump distance" (width of character + gap).
-                layout.setText(queueFont, lastCorrectChar.toString())
+                singleCharSb.setLength(0)
+                singleCharSb.append(lastCorrectChar)
+                layout.setText(queueFont, singleCharSb)
                 val ghostW = layout.width
                 val jumpDistance = ghostW + sepWidth
                 val slideOffset = jumpDistance * queueSlideT
@@ -1510,7 +1508,7 @@ class GameScreen(
             return true
         }
 
-        if (keycode == Input.Keys.F3) {
+        if (game.isDebugBuild && keycode == Input.Keys.F3) {
             debugOverlay.isEnabled = !debugOverlay.isEnabled
             return true
         }
