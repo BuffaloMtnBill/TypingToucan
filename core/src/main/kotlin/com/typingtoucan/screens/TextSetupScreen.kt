@@ -45,6 +45,10 @@ class TextSetupScreen(val game: TypingToucanGame, val difficulty: DifficultyMana
         try {
             val file = Gdx.files.internal("assets/passages.txt")
             if (file.exists()) {
+                if (file.length() > 1_000_000L) {
+                    Gdx.app.error("TextSetupScreen", "passages.txt exceeds 1 MB limit, skipping")
+                    return list
+                }
                 val content = file.readString()
                 val blocks = content.split("~")
                 for (block in blocks) {

@@ -827,9 +827,6 @@ class GameScreen(
                             // Reset streak on hit
                             streak = 0
                             cachedStreakStr = "0"
-                            if (isArcadeMode) {
-                                com.typingtoucan.utils.SaveManager.saveArcadeStreak(0)
-                            }
                             refreshHudCaching()
                         } else {
                             // Normal mode: Reset progression bar.
@@ -899,9 +896,6 @@ class GameScreen(
         if (isPracticeMode || isArcadeMode) {
             streak = 0
             cachedStreakStr = "0"
-            if (isArcadeMode) {
-                com.typingtoucan.utils.SaveManager.saveArcadeStreak(0)
-            }
             streakLayout.setText(queueFont, cachedStreakStr)
             refreshHudCaching()
         }
@@ -1621,9 +1615,6 @@ class GameScreen(
                     cachedStreakStr = "0"
                     refreshHudCaching()
 
-                    if (isArcadeMode) {
-                        com.typingtoucan.utils.SaveManager.saveArcadeStreak(0)
-                    }
                 }
             }
         }

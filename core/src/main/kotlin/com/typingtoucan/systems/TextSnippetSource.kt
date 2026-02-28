@@ -27,6 +27,7 @@ class TextSnippetSource(
 
     // Pooled UI state (Optimization #156).
     private val cachedDisplayState = DisplayState("", "", "", 0, 0)
+    private var cachedTypedIndex = -1 // dirty flag: recompute only when typedIndex changes
 
     // Metadata.
     // We track current passage and next passage info for seamless transition.
@@ -218,6 +219,8 @@ class TextSnippetSource(
     )
 
     fun getDisplayState(): DisplayState {
+        if (typedIndex == cachedTypedIndex) return cachedDisplayState
+
         // Calculate which line matches 'typedIndex'
         var charCount = 0
         var lineIdx = 0
@@ -262,6 +265,7 @@ class TextSnippetSource(
         cachedDisplayState.prevLine = prevStr
         cachedDisplayState.localProgress = localProg
         cachedDisplayState.lineIndex = lineIdx
+        cachedTypedIndex = typedIndex
 
         return cachedDisplayState
     }
