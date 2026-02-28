@@ -17,11 +17,6 @@ class AndroidLauncher : AndroidApplication() {
             useImmersiveMode = true // Hide system bars for maximum screen space
         }
         
-        // Initialize the game
         initialize(TypingToucanGame(isDebugBuild = false), config)
-        
-        // Ensure the soft keyboard doesn't pop up automatically
-        // since we are targeting physical bluetooth keyboards.
-        // This is primarily managed by Android, but we can hint to the system.
     }
 }

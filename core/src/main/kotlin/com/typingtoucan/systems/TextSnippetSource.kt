@@ -1,45 +1,50 @@
 package com.typingtoucan.systems
 
+/**
+ * A single passage of text used in Text Mode.
+ *
+ * @param text The raw passage text.
+ * @param metadata Optional metadata associated with the passage (e.g. title or author).
+ */
 data class PassageItem(val text: String, val metadata: String)
 
 /**
- * Typing source that serves random passages sequentially.
+ * Typing source that serves passages one at a time, preloading the next for seamless transitions.
  *
- * @param allPassages List of all available passages to cycle through.
+ * @param allPassages The pool of passages to draw from.
+ * @param sequential If true, passages are served in order; otherwise they are chosen randomly.
  */
 class TextSnippetSource(
         private val allPassages: List<PassageItem>,
         private val sequential: Boolean = false
 ) : TypingSource {
     override fun setCapitalsEnabled(enabled: Boolean) {
-        // No-op for text mode
+        // No-op for text mode.
     }
 
-    // State pointers.
-    private var currentIndex = 0 // Global read pointer across passages.
-    private var typedIndex = 0 // Tracks progress in CURRENT passage text.
-    // For sequential mode.
+    // Character read pointer into the concatenated passage stream.
+    private var currentIndex = 0
+    // Number of characters the player has confirmed correct in the current passage.
+    private var typedIndex = 0
+    // Index into allPassages used by sequential mode to track the next passage to preload.
     private var listIndex = 0
 
-    // Formatting.
+    // Word-wrapped lines for the current passage, used by the UI.
     val displayLines = mutableListOf<String>()
     private var processedText: String = ""
 
-    // Pooled UI state (Optimization #156).
+    // Cached UI state — recomputed only when typedIndex changes.
     private val cachedDisplayState = DisplayState("", "", "", 0, 0)
-    private var cachedTypedIndex = -1 // dirty flag: recompute only when typedIndex changes
+    private var cachedTypedIndex = -1
 
-    // Metadata.
-    // We track current passage and next passage info for seamless transition.
+    // Current and preloaded-next passage metadata.
     var sourceMetadata = ""
     private var nextSourceMetadata = ""
     private var nextDisplayLines = listOf<String>()
     private var nextProcessedText: String = ""
 
-    // Initialize first passage
     init {
         if (allPassages.isEmpty()) throw IllegalArgumentException("Passages cannot be empty")
-        // Load initial passage.
         if (sequential) {
             listIndex = 0
             setupCurrent(allPassages[0])
@@ -50,7 +55,6 @@ class TextSnippetSource(
         preloadNext()
     }
 
-    // Helpers to process text
     private fun processPassage(p: PassageItem): Pair<List<String>, String> {
         val raw = p.text.replace('\n', ' ').filter { !it.isISOControl() }
         val lines = wordWrap(raw, 15)
@@ -70,28 +74,11 @@ class TextSnippetSource(
         typedIndex = 0
     }
 
+    /** Loads the next passage into the preload buffer so swaps are instantaneous. */
     private fun preloadNext() {
         val p =
                 if (sequential) {
-                    // Check if we just loaded final credit? Loop?
-                    // User says "autoplays... display credits". Usually loops or ends?
-                    // Infinite loop is safest for Text Mode architecture.
-                    // Note: listIndex is tracking CURRENTLY PRELOADED next.
-                    // Wait. init calls setupCurrent (idx 0), then preloadNext.
-                    // preloadNext should load idx 1.
-                    // So if listIndex was used for CURRENT, we increment first.
-                    // If listIndex=0 (Current). Next is 1.
-                    // But I updated listIndex in init? No.
-                    // If sequential: listIndex=0. setupCurrent(0).
-                    // preloadNext logic needs to increment first.
-                    // BUT listIndex should track what is IN next? Or what was LAST used?
-                    // Let's assume listIndex tracks the one currently in 'processedText' (or
-                    // 'nextProcessedText'?)
-                    // If init: listIndex=0. Used by Current.
-                    // preloadNext: listIndex becomes 1. Used by Next.
-                    // swap: Current becomes Next (idx 1).
-                    // preloadNext: listIndex becomes 2.
-                    // Matches.
+                    // Advance listIndex and wrap around to loop through passages indefinitely.
                     listIndex = (listIndex + 1) % allPassages.size
                     allPassages[listIndex]
                 } else {
@@ -146,23 +133,19 @@ class TextSnippetSource(
     }
 
     override fun getNextChar(): Char {
-        // Fetch from Current or Next
-        // We do NOT swap passages here. Queue pre-fetches.
-
+        // Passage swaps are triggered by onCharTyped, not here; the queue reads ahead freely.
         if (currentIndex < processedText.length) {
             return processedText[currentIndex++]
         }
 
-        // Reading from Next
+        // Spill into the preloaded next passage.
         val nextIndex = currentIndex - processedText.length
         if (nextIndex < nextProcessedText.length) {
             currentIndex++
             return nextProcessedText[nextIndex]
         }
 
-        // Next exhausted? Cycle (should be rare given update rate)
-        // For robustness, could force a preload here, but simplest logic assumes swap happens
-        // eventually.
+        // Both passages exhausted — swap has not yet occurred. Return a space as a safe fallback.
         return ' '
     }
 
@@ -174,39 +157,39 @@ class TextSnippetSource(
      * the character stream remains continuous without overlaps.
      */
     private fun performSwap() {
-        // Current becomes Next
         sourceMetadata = nextSourceMetadata
         displayLines.clear()
         displayLines.addAll(nextDisplayLines)
         processedText = nextProcessedText
 
-        // Rebase
-        // Hard reset to 3 matches the TypingQueue buffer size.
-        // This ensures that we are reading exactly from the 4th character of the NEW passage,
-        // which corresponds to the fact that the queue already holds [Char0, Char1, Char2].
+        // Reset currentIndex to 3 to skip the characters already held in the TypingQueue buffer,
+        // keeping the character stream continuous with no gaps or overlaps.
         currentIndex = 3
-        typedIndex = 0 // Reset user progress for new passage
+        typedIndex = 0
 
-        // Preload new Next
         preloadNext()
     }
 
     override fun onCharTyped(char: Char) {
         typedIndex++
-
-        // Check for completion.
-        // If we finished typing current text (including trailing spaces/joins).
         if (typedIndex >= processedText.length) {
             performSwap()
         }
     }
 
     override fun onCrash(char: Char) {
-        // No logic needed
+        // No-op for text mode.
     }
 
-    // UI helpers.
-
+    /**
+     * Snapshot of the UI-visible passage state for a single frame.
+     *
+     * @param currentLine The line the player is currently typing.
+     * @param nextLine The line that follows, shown as a preview.
+     * @param prevLine The line that precedes the current one.
+     * @param localProgress Number of characters typed on the current line.
+     * @param lineIndex Index of the current line within [displayLines].
+     */
     class DisplayState(
             var currentLine: String,
             var nextLine: String,
@@ -215,21 +198,26 @@ class TextSnippetSource(
             var lineIndex: Int
     )
 
+    /**
+     * Returns the current [DisplayState] for rendering.
+     *
+     * The result is cached and recomputed only when [typedIndex] has changed since the last call.
+     */
     fun getDisplayState(): DisplayState {
         if (typedIndex == cachedTypedIndex) return cachedDisplayState
 
-        // Calculate which line matches 'typedIndex'
+        // Find the line that contains typedIndex.
         var charCount = 0
         var lineIdx = 0
 
         for (i in displayLines.indices) {
-            val len = displayLines[i].length + 1 // space join
+            val len = displayLines[i].length + 1 // +1 for the space joining lines
             if (typedIndex < charCount + len) {
                 lineIdx = i
                 break
             }
             charCount += len
-            lineIdx = i // Safety clamp
+            lineIdx = i // clamp to last line if typedIndex overshoots
         }
 
         if (lineIdx >= displayLines.size && displayLines.isNotEmpty())
@@ -246,9 +234,7 @@ class TextSnippetSource(
 
         val prevStr = if (lineIdx > 0) displayLines[lineIdx - 1] else ""
 
-        // Local progress
-        // Re-calculate start CharCount for this line strictly
-        // We need exact start index of current line
+        // Compute the character offset of the start of the current line.
         var startCharIdx = 0
         for (i in 0 until lineIdx) {
             startCharIdx += displayLines[i].length + 1
@@ -256,7 +242,6 @@ class TextSnippetSource(
 
         val localProg = (typedIndex - startCharIdx).coerceIn(0, currentStr.length)
 
-        // Update cached state (Optimization #156).
         cachedDisplayState.currentLine = currentStr
         cachedDisplayState.nextLine = nextStr
         cachedDisplayState.prevLine = prevStr
@@ -267,14 +252,9 @@ class TextSnippetSource(
         return cachedDisplayState
     }
 
-    override fun getProgressDisplay(): String {
-        return "Inf" // Infinite mode
-    }
+    override fun getProgressDisplay(): String = "Inf"
 
-    override fun isComplete(): Boolean {
-        // Never complete in this mode
-        return false
-    }
+    override fun isComplete(): Boolean = false // Text mode runs indefinitely.
 
     override fun expandPool(): List<Char> {
         return emptyList()

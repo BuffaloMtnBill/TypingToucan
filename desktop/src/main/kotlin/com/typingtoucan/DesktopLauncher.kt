@@ -4,11 +4,10 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 
 /**
- * Main entry point for the desktop application.
+ * Launches the desktop application with an LWJGL3 window at 1600×1200, VSync enabled.
  *
- * Configures the LWJGL3 application window and initializes the [TypingToucanGame].
- *
- * @param args Command line arguments (unused).
+ * Passes [TypingToucanGame.isDebugBuild] as true so dev-only features (F3 overlay, screenshots)
+ * are active on desktop.
  */
 fun main() {
     val config =

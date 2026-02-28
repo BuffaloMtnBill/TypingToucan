@@ -1,10 +1,10 @@
 package com.typingtoucan.systems
 
 /**
- * Standard game mode source where characters are unlocked progressively.
+ * Typing source for the standard game mode.
  *
- * Managing stages of character unlocks (from home row outward) and calculates weighted random
- * selection to prioritize new or struggling keys.
+ * Unlocks characters progressively from the home row outward and uses weighted random selection
+ * to surface characters the player struggles with more frequently.
  */
 class ClassicSource : TypingSource {
     /** Stages of character sets to unlock progressively. */
@@ -20,7 +20,7 @@ class ClassicSource : TypingSource {
     // Source of truth for what has been unlocked via progression.
     private val unlockedBaseChars = mutableListOf<Char>()
     private var activePool = mutableListOf<Char>()
-    private val activePoolSet = HashSet<Char>() // mirrors activePool for O(1) contains
+    private val activePoolSet = HashSet<Char>() // mirrors activePool for O(1) membership tests
 
     private var capitalsEnabled = false
 
@@ -137,13 +137,9 @@ class ClassicSource : TypingSource {
             unlockedBaseChars.add(nextChar)
             weights[nextChar] = 10
 
-            // Rebuild pool to include potential capital
+            // Rebuild the pool so the new character (and its capital, if enabled) is included.
             rebuildActivePool()
 
-            // We report what was added.
-            // If capitals enabled, we implicitly added the capital too,
-            // but the "new" thing is the base char.
-            // GameScreen might flash the char.
             addedChars.add(nextChar)
             if (capitalsEnabled && nextChar.isLetter() && nextChar.isLowerCase()) {
                 addedChars.add(nextChar.uppercaseChar())
@@ -151,14 +147,12 @@ class ClassicSource : TypingSource {
 
             currentStageCharIndex++
 
-            // If finished stage, prep for next
+            // Advance to the next stage if the current one is exhausted.
             if (currentStageCharIndex >= currentStageStr.length) {
                 currentStageIndex++
                 currentStageCharIndex = 0
             }
         }
-        // Logic for transitioning stages is handled by index checks above
-
         return addedChars
     }
 
@@ -170,21 +164,12 @@ class ClassicSource : TypingSource {
         }
     }
 
-    override fun getProgressDisplay(): String {
-        // Level is roughly determined by pool size?
-        // Or we can return the current stage/char info.
-        // For now, let's return just empty string as Level is managed by GameScreen counters
-        // But the architecture plan said "Level 1".
-        // Current GameScreen manages 'level' variable.
-        // We can expose iteration info here if we want to move logic.
-        // For now, keep it simple.
-        return ""
-    }
+    override fun getProgressDisplay(): String = ""
 
     override fun isComplete(): Boolean {
         return currentStageIndex >= progressionStages.size
     }
 
-    /** For compatibility with GameScreen's "isFullyUnlocked". */
+    /** Returns true when all progression stages have been unlocked. */
     fun isFullyUnlocked() = isComplete()
 }

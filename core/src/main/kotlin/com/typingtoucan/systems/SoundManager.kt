@@ -8,7 +8,7 @@ import com.badlogic.gdx.audio.Sound
  * Manages the loading, playing, and lifecycle of all audio assets in the game.
  *
  * Handles both short-duration sound effects and long-duration background music. Supports
- * enabling/disabling of sound and music separateley.
+ * independent enabling and disabling of sound effects and music.
  */
 class SoundManager {
     private val flapSounds = com.badlogic.gdx.utils.Array<Sound>()
@@ -40,12 +40,7 @@ class SoundManager {
             }
         }
 
-    /**
-     * Available music tracks.
-     *
-     * - [WHAT]: The default upbeat track.
-     * - [DARK_FOREST]: The alternative track.
-     */
+    /** Available background music tracks. */
     enum class MusicTrack {
         WHAT,
         DARK_FOREST
@@ -60,7 +55,8 @@ class SoundManager {
         }
 
     /**
-     * Updates the active music track.
+     * Switches to the given music track if it differs from the current one.
+     *
      * @param track The track to switch to.
      */
     fun updateTrack(track: MusicTrack) {
@@ -77,7 +73,7 @@ class SoundManager {
         this.assetManager = am
         refreshAssets()
 
-        // Load persisted settings (Tracks are now fixed per screen).
+        // Restore persisted audio settings.
         soundEnabled = com.typingtoucan.utils.SaveManager.loadSoundEnabled()
         musicEnabled = com.typingtoucan.utils.SaveManager.loadMusicEnabled()
         _currentTrack = MusicTrack.WHAT
@@ -87,7 +83,7 @@ class SoundManager {
     fun refreshAssets() {
         if (assetManager == null) return
 
-        // Populate collections from AssetManager.
+        // Populate sound collections from AssetManager.
         // Flap.
         flapSounds.clear()
         for (i in 1..4) {
@@ -125,7 +121,7 @@ class SoundManager {
         errorSound = getSound("assets/sfx_error.mp3")
         splashSound = getMusic("assets/minnowbyte.mp3")
 
-        // Initial music (managed individually via getMusic).
+        // Load the current music track.
         val path =
                 when (_currentTrack) {
                     MusicTrack.WHAT -> "assets/music_bg.mp3"
@@ -180,7 +176,7 @@ class SoundManager {
 
     /** Plays the primary level up sound. */
     fun playLevelUp() {
-        if (soundEnabled) levelUpSound?.play(1.0f) // Loud and proud
+        if (soundEnabled) levelUpSound?.play(1.0f)
     }
 
     /** Plays the practice mode level up / variation sound. */
@@ -204,7 +200,7 @@ class SoundManager {
     fun playSplash() {
         if (soundEnabled) {
             splashSound?.apply {
-                stop() // Force restart if already playing or in limbo state
+                stop() // Restart from the beginning if already playing.
                 volume = 1.0f
                 play()
             }
@@ -220,7 +216,6 @@ class SoundManager {
     fun playMusic() {
         if (!musicEnabled) return
         if (bgMusic == null) {
-            // Load current track if null
             loadCurrentTrack()
         }
         bgMusic?.apply {
@@ -233,7 +228,6 @@ class SoundManager {
     }
 
     private fun loadCurrentTrack() {
-        // bgMusic?.dispose() // Removed: AssetManager handles disposal
         val path =
                 when (_currentTrack) {
                     MusicTrack.WHAT -> "assets/music_bg.mp3"
@@ -243,12 +237,8 @@ class SoundManager {
     }
 
     /**
-     * Helper to switch the active music track.
-     *
-     * Stops the current music, loads the new assets (via AssetManager), and plays if music is
-     * enabled.
-     *
-     * @param track The new [MusicTrack] to play.
+     * Stops the current track, loads [_currentTrack] from the [AssetManager], and resumes
+     * playback if music is enabled.
      */
     private fun switchMusic() {
         stopMusic()
@@ -275,7 +265,7 @@ class SoundManager {
         }
     }
 
-    /** Disposes of all audio assets. Managed by AssetManager, but we null out references. */
+    /** Releases all audio asset references. Asset disposal is handled by the [AssetManager]. */
     fun dispose() {
         bgMusic = null
         flapSounds.clear()

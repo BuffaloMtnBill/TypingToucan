@@ -7,9 +7,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 /**
  * The main game class extending [Game].
  *
- * Responsible for managing global resources such as the [SpriteBatch], [SoundManager], and
- * [AssetManager]. It handles the loading of all game assets at the start and manages screen
- * transitions.
+ * Manages global resources such as the [SpriteBatch], [SoundManager], and [AssetManager]. Handles
+ * asset loading at startup and screen transitions throughout the session.
+ *
+ * @param isDebugBuild Whether the game was launched from a debug build. Enables the F3 overlay
+ *   and Alt+P screenshot capture on desktop.
  */
 class TypingToucanGame(val isDebugBuild: Boolean = false) : Game() {
         /** The main sprite batch used for rendering across the application. */
@@ -47,7 +49,7 @@ class TypingToucanGame(val isDebugBuild: Boolean = false) : Game() {
                 whitePixel = com.badlogic.gdx.graphics.Texture(pixmap)
                 pixmap.dispose()
 
-                // 1. Queue all assets in AssetManager.
+                // Queue all assets in AssetManager.
 
                 // Load atlas containing background tiles and other entities.
                 assetManager.load(
@@ -106,7 +108,7 @@ class TypingToucanGame(val isDebugBuild: Boolean = false) : Game() {
                         }
                 }
 
-                // Audio (Music)
+                // Load music tracks.
                 assetManager.load("assets/music_bg.mp3", com.badlogic.gdx.audio.Music::class.java)
                 assetManager.load(
                         "assets/music_dark_forest.mp3",
@@ -114,10 +116,10 @@ class TypingToucanGame(val isDebugBuild: Boolean = false) : Game() {
                 )
                 assetManager.load("assets/minnowbyte.mp3", com.badlogic.gdx.audio.Music::class.java)
 
-                // 2. Link SoundManager to AssetManager (it will pull assets as they load)
+                // Link SoundManager to AssetManager (assets are pulled as they finish loading).
                 soundManager.init(assetManager)
 
-                // 3. Initialize the splash screen
+                // Show the splash screen while assets load.
                 setScreen(com.typingtoucan.screens.SplashScreen(this))
         }
 

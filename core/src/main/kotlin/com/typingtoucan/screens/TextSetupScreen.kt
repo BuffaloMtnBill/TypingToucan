@@ -14,15 +14,11 @@ class TextSetupScreen(val game: TypingToucanGame, val difficulty: DifficultyMana
             com.badlogic.gdx.graphics.OrthographicCamera().apply { setToOrtho(false, 800f, 600f) }
     private val viewport = com.badlogic.gdx.utils.viewport.ExtendViewport(800f, 600f, camera)
 
-    init {
-        // No font initialization is needed if the screen transitions immediately to the game.
-        // We handle loading here.
-    }
-
     override fun show() {
         startTextMode()
     }
 
+    /** Loads passages and transitions immediately to [GameScreen] in Text Mode. */
     private fun startTextMode() {
         val passages = loadPassages()
         if (passages.isNotEmpty()) {
@@ -34,12 +30,17 @@ class TextSetupScreen(val game: TypingToucanGame, val difficulty: DifficultyMana
                             customSource = TextSnippetSource(passages)
                     )
         } else {
-            // Handle load errors or empty passage list.
             Gdx.app.error("TextSetupScreen", "No passages found")
             game.screen = MenuScreen(game)
         }
     }
 
+    /**
+     * Reads and parses passages from `assets/passages.txt`.
+     *
+     * Passages are delimited by `~`. Returns an empty list if the file is missing, exceeds 1 MB,
+     * or cannot be read.
+     */
     private fun loadPassages(): List<com.typingtoucan.systems.PassageItem> {
         val list = mutableListOf<com.typingtoucan.systems.PassageItem>()
         try {

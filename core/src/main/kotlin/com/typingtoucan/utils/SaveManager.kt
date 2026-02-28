@@ -4,9 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 
 /**
- * Handles persistent data storage using [Preferences].
+ * Manages persistent storage of game progress and user preferences via [Preferences].
  *
- * Saves and loads high scores and user preferences.
+ * All writes are dispatched asynchronously to avoid blocking the GL thread. Reads are synchronous
+ * and safe to call from any thread after the first [Gdx] context is available.
  */
 object SaveManager {
     private const val PREFS_NAME = "TypingToucanPrefs"
@@ -20,10 +21,7 @@ object SaveManager {
     private const val KEY_SOUND_ENABLED = "soundEnabled"
     private const val KEY_MUSIC_ENABLED = "musicEnabled"
 
-    /**
-     * Offloads the blocking disk write to a background thread. We use a single thread to ensure
-     * order of operations and avoid race conditions on the file.
-     */
+    /** Flushes pending preference writes on a background thread. */
     private fun asyncFlush() {
         val prefsToFlush = prefs
         Thread {
@@ -43,8 +41,9 @@ object SaveManager {
     // Normal mode persistence.
 
     /**
-     * Saves the highest level reached in Normal Mode. Only updates if the new level is higher than
-     * the stored value.
+     * Saves [level] as the highest Normal Mode level if it exceeds the stored value.
+     *
+     * @param level The level reached at the end of the session.
      */
     fun saveNormalLevel(level: Int) {
         val current = getNormalLevel()
@@ -53,11 +52,17 @@ object SaveManager {
             asyncFlush()
         }
     }
+
+    /** Returns the highest Normal Mode level reached, defaulting to 1. */
     fun getNormalLevel(): Int = prefs.getInteger(KEY_NORMAL_LEVEL, 1)
 
-    // Custom mode persistence.
+    // Custom mode (practice) persistence.
 
-    /** Saves the highest streak achieved in Custom Mode (Practice). */
+    /**
+     * Saves [streak] as the Custom Mode high score if it exceeds the stored value.
+     *
+     * @param streak The streak count at the end of the session.
+     */
     fun saveCustomStreak(streak: Int) {
         val current = getCustomStreak()
         if (streak > current) {
@@ -65,9 +70,17 @@ object SaveManager {
             asyncFlush()
         }
     }
+
+    /** Returns the Custom Mode high streak, defaulting to 0. */
     fun getCustomStreak(): Int = prefs.getInteger(KEY_CUSTOM_STREAK, 0)
 
-    // Text mode streak persistence.
+    // Text mode persistence.
+
+    /**
+     * Saves [streak] as the Text Mode high score if it exceeds the stored value.
+     *
+     * @param streak The streak count at the end of the session.
+     */
     fun saveTextStreak(streak: Int) {
         val current = getTextStreak()
         if (streak > current) {
@@ -75,9 +88,17 @@ object SaveManager {
             asyncFlush()
         }
     }
+
+    /** Returns the Text Mode high streak, defaulting to 0. */
     fun getTextStreak(): Int = prefs.getInteger(KEY_TEXT_STREAK, 0)
 
-    // Arcade mode streak persistence.
+    // Arcade mode persistence.
+
+    /**
+     * Saves [streak] as the Arcade Mode high score if it exceeds the stored value.
+     *
+     * @param streak The streak count at the end of the session.
+     */
     fun saveArcadeStreak(streak: Int) {
         val current = getArcadeStreak()
         if (streak > current) {
@@ -85,8 +106,11 @@ object SaveManager {
             asyncFlush()
         }
     }
+
+    /** Returns the Arcade Mode high streak, defaulting to 0. */
     fun getArcadeStreak(): Int = prefs.getInteger(KEY_ARCADE_STREAK, 0)
 
+    /** Resets all mode high scores and streaks to their initial values. */
     fun resetHighScore() {
         prefs.putInteger(KEY_NORMAL_LEVEL, 1)
         prefs.putInteger(KEY_CUSTOM_STREAK, 0)
