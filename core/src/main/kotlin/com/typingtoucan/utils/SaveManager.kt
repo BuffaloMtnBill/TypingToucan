@@ -17,6 +17,8 @@ object SaveManager {
     private const val KEY_TEXT_STREAK = "text_streak_v2"
     private const val KEY_ARCADE_STREAK = "arcade_streak"
     private const val CAPITALS_KEY = "capitalsEnabled"
+    private const val KEY_SOUND_ENABLED = "soundEnabled"
+    private const val KEY_MUSIC_ENABLED = "musicEnabled"
 
     /**
      * Offloads the blocking disk write to a background thread. We use a single thread to ensure
@@ -92,6 +94,24 @@ object SaveManager {
         prefs.putInteger(KEY_ARCADE_STREAK, 0)
         asyncFlush()
     }
+
+    /** Saves the user's sound-enabled preference asynchronously. */
+    fun saveSoundEnabled(enabled: Boolean) {
+        prefs.putBoolean(KEY_SOUND_ENABLED, enabled)
+        asyncFlush()
+    }
+
+    /** Loads the user's sound-enabled preference. */
+    fun loadSoundEnabled(): Boolean = prefs.getBoolean(KEY_SOUND_ENABLED, true)
+
+    /** Saves the user's music-enabled preference asynchronously. */
+    fun saveMusicEnabled(enabled: Boolean) {
+        prefs.putBoolean(KEY_MUSIC_ENABLED, enabled)
+        asyncFlush()
+    }
+
+    /** Loads the user's music-enabled preference. */
+    fun loadMusicEnabled(): Boolean = prefs.getBoolean(KEY_MUSIC_ENABLED, true)
 
     /** Saves the user's preference for capital letters. */
     fun saveCapitalsEnabled(enabled: Boolean) {

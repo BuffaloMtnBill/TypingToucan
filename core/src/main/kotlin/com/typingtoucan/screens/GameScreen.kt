@@ -564,7 +564,7 @@ class GameScreen(
             }
         }
 
-        draw()
+        draw(delta)
     }
 
     /**
@@ -939,7 +939,7 @@ class GameScreen(
      * 4. Draw UI (Status bars, text)
      * 5. End Batch
      */
-    private fun draw() {
+    private fun draw(delta: Float) {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.3f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
@@ -1130,7 +1130,7 @@ class GameScreen(
             lastTextLineIndex = state_tm.lineIndex
 
             if (textScrollTimer > 0f) {
-                textScrollTimer -= Gdx.graphics.deltaTime
+                textScrollTimer -= delta
                 if (textScrollTimer < 0f) textScrollTimer = 0f
             }
 
@@ -1455,16 +1455,18 @@ class GameScreen(
             y: Float,
             charSpacing: Float
     ) {
+        val glyphs = arrayOfNulls<BitmapFont.Glyph>(text.length)
         var totalWidth = 0f
         for (i in 0 until text.length) {
             val glyph = font.data.getGlyph(text[i]) ?: continue
+            glyphs[i] = glyph
             totalWidth += glyph.width * font.data.scaleX + charSpacing
         }
         if (text.isNotEmpty()) totalWidth -= charSpacing
 
         var currentX = centerX - totalWidth / 2f
         for (i in 0 until text.length) {
-            val glyph = font.data.getGlyph(text[i]) ?: continue
+            val glyph = glyphs[i] ?: continue
             // Range-based draw avoids String allocation.
             font.draw(
                     batch,

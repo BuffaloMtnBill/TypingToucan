@@ -25,18 +25,14 @@ class SoundManager {
     var soundEnabled: Boolean = true
         set(value) {
             field = value
-            val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
-            prefs.putBoolean("soundEnabled", value)
-            prefs.flush()
+            com.typingtoucan.utils.SaveManager.saveSoundEnabled(value)
         }
 
     /** Controls whether background music is played. Updates playback immediately. */
     var musicEnabled: Boolean = true
         set(value) {
             field = value
-            val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
-            prefs.putBoolean("musicEnabled", value)
-            prefs.flush()
+            com.typingtoucan.utils.SaveManager.saveMusicEnabled(value)
             if (value) {
                 playMusic()
             } else {
@@ -82,9 +78,8 @@ class SoundManager {
         refreshAssets()
 
         // Load persisted settings (Tracks are now fixed per screen).
-        val prefs = Gdx.app.getPreferences("TypingToucanPrefs")
-        soundEnabled = prefs.getBoolean("soundEnabled", true)
-        musicEnabled = prefs.getBoolean("musicEnabled", true)
+        soundEnabled = com.typingtoucan.utils.SaveManager.loadSoundEnabled()
+        musicEnabled = com.typingtoucan.utils.SaveManager.loadMusicEnabled()
         _currentTrack = MusicTrack.WHAT
     }
 

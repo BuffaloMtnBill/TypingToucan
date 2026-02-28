@@ -20,6 +20,7 @@ class ClassicSource : TypingSource {
     // Source of truth for what has been unlocked via progression.
     private val unlockedBaseChars = mutableListOf<Char>()
     private var activePool = mutableListOf<Char>()
+    private val activePoolSet = HashSet<Char>() // mirrors activePool for O(1) contains
 
     private var capitalsEnabled = false
 
@@ -46,14 +47,17 @@ class ClassicSource : TypingSource {
 
     private fun rebuildActivePool() {
         activePool.clear()
+        activePoolSet.clear()
         unlockedBaseChars.forEach { char ->
             activePool.add(char)
+            activePoolSet.add(char)
             // Ensure weight exists.
             if (!weights.containsKey(char)) weights[char] = 10
 
             if (capitalsEnabled && char.isLetter() && char.isLowerCase()) {
                 val upper = char.uppercaseChar()
                 activePool.add(upper)
+                activePoolSet.add(upper)
                 if (!weights.containsKey(upper)) weights[upper] = 10
             }
         }
@@ -99,7 +103,7 @@ class ClassicSource : TypingSource {
         if (currentWeight > minWeight) {
             weights[char] = currentWeight - 1
             // Only update totalWeight if the character is currently in the active pool.
-            if (activePool.contains(char)) {
+            if (activePoolSet.contains(char)) {
                 totalWeight--
             }
         }
@@ -109,7 +113,7 @@ class ClassicSource : TypingSource {
         val oldWeight = weights.getValue(char)
         val effectiveOld = if (oldWeight > 0) oldWeight else 1
         weights[char] = 10
-        if (activePool.contains(char)) {
+        if (activePoolSet.contains(char)) {
             totalWeight += (10 - effectiveOld)
         }
     }
